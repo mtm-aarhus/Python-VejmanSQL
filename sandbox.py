@@ -75,6 +75,7 @@ options = webdriver.ChromeOptions()
 options.add_experimental_option("prefs", {
     "download.default_directory": downloads_folder
 })
+options.add_argument("--disable-search-engine-choice-screen")
 driver = webdriver.Chrome(options=options)
 wait = WebDriverWait(driver, 60)
 
@@ -128,7 +129,7 @@ ORDER BY "Ansøgningsdato"
 *)"""
 
 query_textbox.clear()
-query_textbox.send_keys(sql_query)
+driver.execute_script("arguments[0].value = arguments[1];", query_textbox, sql_query)
 time.sleep(5)
 
 # Click Search Button
