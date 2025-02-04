@@ -24,6 +24,7 @@ def process(orchestrator_connection: OrchestratorConnection, queue_element: Queu
     RobotCredentials = orchestrator_connection.get_credential("Robot365User")
     username = RobotCredentials.username
     password = RobotCredentials.password
+    
 
     sharepoint_site = f"{orchestrator_connection.get_constant("AarhusKommuneSharePoint").value}/Teams/tea-teamsite10946"
     # Setup Selenium WebDriver
@@ -119,12 +120,12 @@ def process(orchestrator_connection: OrchestratorConnection, queue_element: Queu
             xlsx_files = [file for file in new_files if file.lower().endswith(".xls")]
             if xlsx_files:
                 downloaded_file = os.path.join(downloads_folder, xlsx_files[0])
-                print(f"Download completed: {downloaded_file}")
+                orchestrator_connection.log_info(f"Download completed: {downloaded_file}")
                 break
         
         # Check for timeout
         if time.time() - start_time > timeout:
-            print("Timeout reached while waiting for a download.")
+            orchestrator_connection.log_info("Timeout reached while waiting for a download.")
             break
         
         time.sleep(1)  # Avoid hammering the file system
