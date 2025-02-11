@@ -12,8 +12,7 @@ SMTP_PORT = 25
 SCREENSHOT_SENDER = "noreply@aarhus.dk"
 
 # Constant/Credential names
-ERROR_EMAIL = "jadt"
-
+ERROR_EMAIL = "Error Email"
 
 # Queue specific configs
 # ----------------------
