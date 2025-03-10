@@ -75,7 +75,8 @@ options = webdriver.ChromeOptions()
 options.add_experimental_option("prefs", {
     "download.default_directory": downloads_folder
 })
-options.add_argument("--disable-search-engine-choice-screen")
+options.add_argument('--remote-debugging-pipe')
+
 driver = webdriver.Chrome(options=options)
 wait = WebDriverWait(driver, 60)
 
