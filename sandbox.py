@@ -4,29 +4,14 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from office365.runtime.auth.user_credential import UserCredential
+import office365
 from office365.sharepoint.client_context import ClientContext
 import pandas as pd
 from openpyxl import Workbook
 import requests
-
 import time
 import os
 
-def sharepoint_client(username: str, password: str, sharepoint_site_url: str, orchestrator_connection: OrchestratorConnection) -> ClientContext:
-    """
-    Creates and returns a SharePoint client context.
-    """
-    # Authenticate to SharePoint
-    ctx = ClientContext(sharepoint_site_url).with_credentials(UserCredential(username, password))
-
-    # Load and verify connection
-    web = ctx.web
-    ctx.load(web)
-    ctx.execute_query()
-
-    orchestrator_connection.log_info(f"Authenticated successfully. Site Title: {web.properties['Title']}")
-    return ctx
 
 def upload_file_to_sharepoint(client: ClientContext, sharepoint_file_url: str, local_file_path: str, orchestrator_connection: OrchestratorConnection):
     """
@@ -59,16 +44,36 @@ def upload_file_to_sharepoint(client: ClientContext, sharepoint_file_url: str, l
     
 
 
-orchestrator_connection = OrchestratorConnection("PlannerRefresh", os.getenv('OpenOrchestratorSQL'), os.getenv('OpenOrchestratorKey'), None)
+orchestrator_connection = OrchestratorConnection("VejmanSQL", os.getenv('OpenOrchestratorSQL'), os.getenv('OpenOrchestratorKey'), None)
 
 RobotCredentials = orchestrator_connection.get_credential("Robot365User")
 username = RobotCredentials.username
 password = RobotCredentials.password
 
 sharepoint_site = f"{orchestrator_connection.get_constant("AarhusKommuneSharePoint").value}/Teams/tea-teamsite10946"
-# Setup Selenium WebDriver
 
-client = sharepoint_client(username, password, sharepoint_site, orchestrator_connection)
+# Setup Selenium WebDriver
+certification = orchestrator_connection.get_credential("SharePointCert")
+api = orchestrator_connection.get_credential("SharePointAPI")
+
+cert_credentials = {
+    "tenant": api.username,
+    "client_id": api.password,
+    "thumbprint": certification.username,
+    "cert_path": certification.password
+}
+ctx = ClientContext(sharepoint_site).with_client_certificate(**cert_credentials)
+current_web = ctx.web.get().execute_query()
+print("{0}".format(current_web.url))
+
+#Load and verify connection
+web = ctx.web
+ctx.load(web)
+ctx.execute_query()
+client = ctx
+
+sharepoint_folder = "Delte dokumenter/Azure"
+upload_file_to_sharepoint(client, sharepoint_folder, r"C:\Users\az60026\Downloads\teams_paths.txt", orchestrator_connection)
 
 downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
 options = webdriver.ChromeOptions()
