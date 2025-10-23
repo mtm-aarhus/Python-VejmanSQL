@@ -112,7 +112,7 @@ def process(orchestrator_connection: OrchestratorConnection, queue_element: Queu
     driver.find_element(By.XPATH, "//input[@type='submit' and @value='Eksportér']").click()
 
     # Wait for file to be downloaded
-    timeout = 360
+    timeout = 720
     start_time = time.time()
 
 
