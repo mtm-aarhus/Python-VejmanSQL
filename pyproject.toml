@@ -20,7 +20,7 @@ dependencies = [
     "Pillow == 10.*",
     "selenium == 4.28.1",
     "pandas == 2.3.3",
-    "openpyxl"
+    "openpyxl",
     "office365-rest-python-client==2.5.14",
     "requests==2.32.3",
     "pip-system-certs"
