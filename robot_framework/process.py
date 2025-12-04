@@ -124,7 +124,7 @@ def process(orchestrator_connection: OrchestratorConnection, queue_element: Queu
         # Check if new files have been added
         if new_files:
             # Filter for .xlsx files among the new files
-            xlsx_files = [file for file in new_files if file.lower().endswith(".xls")]
+            xlsx_files = [file for file in new_files if file.lower().endswith(".xlsx")]
             if xlsx_files:
                 downloaded_file = os.path.join(downloads_folder, xlsx_files[0])
                 orchestrator_connection.log_info(f"Download completed: {downloaded_file}")
