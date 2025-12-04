@@ -10,6 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from office365.runtime.auth.user_credential import UserCredential
 from office365.sharepoint.client_context import ClientContext
 import pandas as pd
+from openpyxl import Workbook
 import requests
 
 import time
@@ -135,23 +136,22 @@ def process(orchestrator_connection: OrchestratorConnection, queue_element: Queu
             break
         
         time.sleep(1)  # Avoid hammering the file system
+    downloaded_filepath = os.path.join(downloads_folder, downloaded_file)
 
     # Convert to XLSX
     xlsx_filepath = os.path.join(downloads_folder, "VejmanBehandlingstider.xlsx")
     if os.path.exists(xlsx_filepath):
         os.remove(xlsx_filepath)
 
-   # Remove existing version if it exists
-    if os.path.exists(xlsx_filepath):
-        os.remove(xlsx_filepath)
+    # Read the old XLS file using xlrd engine
+    df = pd.read_excel(downloaded_filepath, engine="openpyxl")
 
-    # ✅ Just rename instead of reading/saving
-    os.rename(downloaded_file, xlsx_filepath)
-    orchestrator_connection.log_info(f"Renamed downloaded file to: {xlsx_filepath}")
+    # Save as XLSX using openpyxl
+    df.to_excel(xlsx_filepath, index=False, engine="openpyxl")
 
-    # Cleanup browser
+    # Cleanup
     driver.quit()
-
+    os.remove(downloaded_filepath)
 
     sharepoint_folder = "Delte dokumenter/DataudtrækVejman"
 
